@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <title>Pentimento</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #0b0a0e; overflow: hidden; }
+    #loading {
+      position: fixed; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 14px;
+      color: #d6b268; font: 600 28px Georgia, serif; letter-spacing: .25em;
+    }
+    #loading small { font: italic 14px Georgia, serif; color: #a89a80; letter-spacing: 0; }
+    #bar { width: 220px; height: 2px; background: #2a2420; overflow: hidden; }
+    #bar i { display: block; height: 100%; width: 40%; background: #d6b268; animation: s 1.2s ease-in-out infinite; }
+    @keyframes s { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+  </style>
+</head>
+<body>
+  <div id="loading">PENTIMENTO<div id="bar"><i></i></div><small>Preparazione della tela…</small></div>
+  <script src="wasm_exec.js"></script>
+  <script>
+    const go = new Go();
+    WebAssembly.instantiateStreaming(fetch("game.wasm"), go.importObject)
+      .then(r => { document.getElementById("loading").remove(); go.run(r.instance); })
+      .catch(e => { document.querySelector("#loading small").textContent = "Errore di caricamento: " + e; });
+  </script>
+</body>
+</html>
