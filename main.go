@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
@@ -44,6 +45,9 @@ func (g *Game) Update() error {
 		g.scene = NewTitleScene()
 	}
 	g.tick++
+	if inpututil.IsKeyJustPressed(ebiten.KeyM) {
+		ToggleMute()
+	}
 
 	const step = 1.0 / 40
 	if g.fadingOut {

@@ -56,6 +56,12 @@ func NewLabScene() *LabScene {
 func (s *LabScene) Update(g *Game) error {
 	s.t++
 	s.px, s.py, s.pointing = pointer()
+	switch s.state {
+	case labIntro, labSearch:
+		SetMood(Mood{Pad: 0.8, Arp: 0.1, Tension: 0.2})
+	default:
+		SetMood(Mood{Pad: 1, Arp: 0.35, Bright: 0.2, Tension: 0.1})
+	}
 
 	if s.dlg.Update() {
 		return nil
@@ -72,6 +78,7 @@ func (s *LabScene) Update(g *Game) error {
 		}
 		if s.hover > 40 {
 			s.state = labFound
+			PlaySFX("uv")
 			s.dlg.Start(
 				Line{"Elena", "Una «A.» incisa sotto la vernice. È la sigla di Ada... ma non è una firma da restauratrice.", false},
 				Line{"Elena", "È un segno lasciato apposta. Per qualcuno che sapesse dove cercare.", false},

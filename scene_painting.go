@@ -1,6 +1,7 @@
 package main
 
 import (
+	"image/color"
 	"math"
 	"math/rand"
 
@@ -41,7 +42,8 @@ type PaintingScene struct {
 	rng   *rand.Rand
 	parts []particle
 
-	x, y      float64 // Elena
+	x, y      float64 // posizione di Elena
+	el        *Elena
 	tx, ty    float64 // destinazione click/tocco
 	hasTarget bool
 	frags     []*fragment
@@ -59,6 +61,7 @@ func NewPaintingScene() *PaintingScene {
 		off: ebiten.NewImage(ScreenW, ScreenH),
 		rng: rand.New(rand.NewSource(7)),
 		x:   300, y: 320,
+		el: NewElena(300, 320),
 		mx: 600, my: 20,
 	}
 	s.frags = []*fragment{
@@ -95,6 +98,7 @@ func (s *PaintingScene) Update(g *Game) error {
 	target := float64(s.taken) / float64(len(s.frags))
 	s.restore += (target - s.restore) * 0.03
 	s.shake *= 0.9
+	s.updateMood()
 	for i := range s.parts {
 		p := &s.parts[i]
 		p.px, p.py = p.x, p.y
@@ -139,7 +143,34 @@ func (s *PaintingScene) Update(g *Game) error {
 	return nil
 }
 
+func (s *PaintingScene) palette() []color.NRGBA {
+	var p []color.NRGBA
+	for _, f := range s.frags {
+		if f.taken {
+			p = append(p, color.NRGBA{f.r, f.g, f.b, 255})
+		}
+	}
+	return p
+}
+
+func (s *PaintingScene) updateMood() {
+	m := Mood{Pad: 1, Arp: 0.25 + 0.75*s.restore, Bright: s.restore}
+	if s.stainOn && s.phase == phPlay {
+		d := math.Hypot(s.x-s.mx, s.y-s.my)
+		m.Tension = clamp(1-d/260, 0.15, 1)
+	}
+	if s.phase == phEnd {
+		m = Mood{Pad: 0.9, Arp: 0.7, Bright: 1}
+	}
+	SetMood(m)
+}
+
 func (s *PaintingScene) updatePlayer() {
+	ox, oy := s.x, s.y
+	defer func() {
+		s.el.Step(s.x-ox, s.y-oy, s.palette())
+		s.el.X, s.el.Y = s.x, s.y
+	}()
 	const speed = 1.7
 	dx, dy := 0.0, 0.0
 	if ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
@@ -199,6 +230,8 @@ func (s *PaintingScene) updateStain() {
 		s.mx += vx / d * -20
 		s.my += vy / d * -20
 		s.shake = 10
+		s.el.Hit()
+		PlaySFX("hit")
 		s.restore = math.Max(0, s.restore-0.15)
 		s.hasTarget = false
 	}
@@ -211,6 +244,7 @@ func (s *PaintingScene) checkFragments() {
 		}
 		f.taken = true
 		s.taken++
+		PlaySFX("chime")
 		s.stainOn = true
 		lines := []Line{{"Ada", f.clue, true}}
 		if s.taken == 1 {
@@ -218,6 +252,7 @@ func (s *PaintingScene) checkFragments() {
 		}
 		if s.taken == len(s.frags) {
 			s.phase = phReveal
+			PlaySFX("reveal")
 			lines = append(lines, Line{"", "La Macchia si scioglie. Sotto il cielo, la pittura si fa trasparente...", false})
 		}
 		s.dlg.Start(lines...)
@@ -246,7 +281,14 @@ func (s *PaintingScene) Draw(screen *ebiten.Image) {
 
 	sx := (s.rng.Float64()*2 - 1) * s.shake
 	sy := (s.rng.Float64()*2 - 1) * s.shake
-	applyGrade(screen, s.off, s.restore, ft, sx, sy)
+	lx, ly := s.el.LampPos()
+	lr := 58 + 4*math.Sin(ft/20)
+	if s.el.hurt > 0 {
+		lr *= 0.4
+	}
+	applyGradeLamp(screen, s.off, s.restore, ft, sx, sy, lx, ly, lr)
+	s.el.DrawTrail(screen)
+	s.el.DrawLight(screen, ft)
 
 	// pentimento rivelato
 	if s.revealT > 0 {
@@ -261,20 +303,16 @@ func (s *PaintingScene) Draw(screen *ebiten.Image) {
 			continue
 		}
 		p := 0.5 + 0.5*math.Sin(ft/12+f.x)
+		// sotto la luce UV il pigmento brilla di più
+		lit := 1 + 2*clamp(1-math.Hypot(f.x-lx, f.y-ly)/90, 0, 1)
 		for k := 4; k >= 1; k-- {
-			vector.DrawFilledCircle(screen, float32(f.x), float32(f.y), float32(4+float64(k)*3+p*3), rgba(f.r, f.g, f.b, 0.12), true)
+			vector.DrawFilledCircle(screen, float32(f.x), float32(f.y), float32((4+float64(k)*3+p*3)*(0.8+0.2*lit)), rgba(f.r, f.g, f.b, 0.1*lit), true)
 		}
 		vector.DrawFilledCircle(screen, float32(f.x), float32(f.y), 5, rgba(f.r, f.g, f.b, 1), true)
 	}
 
-	// Elena: silhouette con lanterna
-	ex, ey := float32(s.x+sx), float32(s.y+sy)
-	for k := 5; k >= 1; k-- {
-		vector.DrawFilledCircle(screen, ex+5, ey-4, float32(k)*6, rgba(255, 200, 120, 0.05), true)
-	}
-	vector.DrawFilledRect(screen, ex-4, ey-6, 8, 14, rgba(28, 22, 30, 1), true)
-	vector.DrawFilledCircle(screen, ex, ey-10, 4.5, rgba(28, 22, 30, 1), true)
-	vector.DrawFilledCircle(screen, ex+6, ey-2, 2.5, rgba(255, 220, 150, 1), true)
+	// Elena
+	s.el.Draw(screen, ft, sx, sy)
 
 	// HUD pigmenti
 	if s.phase == phPlay || s.phase == phEnter {

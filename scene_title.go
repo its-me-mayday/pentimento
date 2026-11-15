@@ -13,6 +13,7 @@ func NewTitleScene() *TitleScene { return &TitleScene{} }
 
 func (s *TitleScene) Update(g *Game) error {
 	s.t++
+	SetMood(Mood{Pad: 1, Arp: 0.3})
 	if s.t > 20 && confirmPressed() {
 		g.GoTo(NewLabScene())
 	}
@@ -31,6 +32,7 @@ func (s *TitleScene) Draw(screen *ebiten.Image) {
 	if (s.t/30)%2 == 0 {
 		drawText(screen, "Clicca o premi INVIO per iniziare", faceText, ScreenW/2, 232, rgba(240, 240, 240, 0.9), 0)
 	}
+	drawText(screen, "M: musica on/off", faceSmall, ScreenW-12, 12, rgba(180, 170, 150, 0.6), 1)
 	drawText(screen, "pentiménto  s.m.  —  traccia di una versione precedente, nascosta sotto la pittura finale.",
 		faceSmall, ScreenW/2, 326, rgba(180, 170, 150, 0.8), 0)
 }

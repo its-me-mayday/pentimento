@@ -9,7 +9,7 @@ Un thriller sull'arte scritto in Go con [Ebitengine](https://ebitengine.org). Se
 2. **Laboratorio**: cerca con la lampada UV il segno nascosto da Ada.
 3. **Dentro il quadro**: recupera 5 pigmenti, sfuggi alla Macchia e rivela il pentimento.
 
-Tutta la grafica è procedurale (pennellate generate da codice): non ci sono asset esterni. La storia completa è in [`docs/STORY.md`](docs/STORY.md).
+Tutto è procedurale: la grafica (pennellate generate da codice) e la musica (sintetizzata in tempo reale). Non ci sono asset esterni. La colonna sonora segue il gioco: gli arpeggi si accendono quando restauri i colori e il battito accelera quando la Macchia si avvicina. La storia completa è in [`docs/STORY.md`](docs/STORY.md).
 
 ## Comandi
 
@@ -19,7 +19,7 @@ make run         # finestra desktop (su Linux servono le librerie X11/GL, vedi d
 make serve       # build WebAssembly + server su http://localhost:8080
 ```
 
-Controlli: **WASD/frecce** oppure **click/tocco** per muoversi; **Invio/Spazio/click** per avanzare i dialoghi.
+Controlli: **WASD/frecce** oppure **click/tocco** per muoversi; **Invio/Spazio/click** per avanzare i dialoghi; **M** per la musica.
 
 ## Deploy su GitHub Pages
 
@@ -35,5 +35,7 @@ Controlli: **WASD/frecce** oppure **click/tocco** per muoversi; **Invio/Spazio/c
 | `scene_title.go` / `scene_lab.go` / `scene_painting.go` | le tre scene |
 | `starry.go` | generatore procedurale della "Notte stellata" e campo di vortici |
 | `shader.go` | shader Kage: seppia ⇄ colore, vignettatura, trama della tela |
+| `character.go` | Elena: animazione, lampada UV, impronte di colore |
+| `music.go` | sintetizzatore e colonna sonora adattiva |
 | `dialogue.go` | dialoghi con effetto macchina da scrivere |
 | `web/index.html` | pagina di caricamento per il browser |

@@ -52,6 +52,7 @@ func initAssets() {
 	gradeShader = sh
 
 	paintingBG = generateStarryNight()
+	initMusic()
 }
 
 func mustFace(ttf []byte) *text.GoTextFaceSource {
@@ -136,12 +137,18 @@ func wrap(s string, face text.Face, maxW float64) []string {
 // applyGrade disegna src su dst con il colour grading del gioco:
 // amount 0 = seppia spenta, 1 = colori pieni.
 func applyGrade(dst, src *ebiten.Image, amount, t float64, dx, dy float64) {
+	applyGradeLamp(dst, src, amount, t, dx, dy, 0, 0, 0)
+}
+
+// applyGradeLamp: come applyGrade, ma la lampada UV in (lx, ly) ridà colore nel raggio lr.
+func applyGradeLamp(dst, src *ebiten.Image, amount, t, dx, dy, lx, ly, lr float64) {
 	op := &ebiten.DrawRectShaderOptions{}
 	op.GeoM.Translate(dx, dy)
 	op.Images[0] = src
 	op.Uniforms = map[string]any{
 		"Amount": float32(amount),
 		"Time":   float32(t),
+		"Lamp":   []float32{float32(lx), float32(ly), float32(lr)},
 	}
 	b := src.Bounds()
 	dst.DrawRectShader(b.Dx(), b.Dy(), gradeShader, op)
