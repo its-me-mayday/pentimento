@@ -265,6 +265,12 @@ func (s *Synth) sample() (float64, float64) {
 			}
 		case 2: // sweep luminoso
 			freq := sh.freq * (1 + t*1.5)
+			if sh.freq > 400 { // sweep breve (lampo)
+				freq = sh.freq * (1 + t*6)
+				if t > 0.6 {
+					continue
+				}
+			}
 			sh.ph += freq / sampleRate
 			fx += tri(sh.ph) * math.Sin(math.Pi*math.Min(t/3, 1)) * sh.amp
 			if t > 3 {
@@ -300,6 +306,10 @@ func (s *Synth) trigger(name string) {
 	case "uv":
 		s.shots = append(s.shots, shot{kind: 2, freq: mtof(62), amp: 0.06})
 		s.shots = append(s.shots, shot{kind: 0, freq: mtof(81), amp: 0.08, start: sampleRate / 2})
+	case "flash":
+		s.shots = append(s.shots, shot{kind: 2, freq: mtof(69), amp: 0.09})
+		s.shots = append(s.shots, shot{kind: 0, freq: mtof(93), amp: 0.07})
+		s.shots = append(s.shots, shot{kind: 0, freq: mtof(98), amp: 0.05, start: sampleRate / 12})
 	case "hit":
 		s.shots = append(s.shots, shot{kind: 1, amp: 0.7})
 	case "reveal":

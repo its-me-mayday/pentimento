@@ -40,6 +40,7 @@ type LabScene struct {
 }
 
 func NewLabScene() *LabScene {
+	PrewarmWorld()
 	s := &LabScene{}
 	s.thumb = ebiten.NewImage(ScreenW, ScreenH)
 	applyGrade(s.thumb, paintingBG, 0.22, 0, 0, 0)
@@ -93,10 +94,10 @@ func (s *LabScene) Update(g *Game) error {
 			break // piccola pausa: evita di entrare per sbaglio chiudendo il dialogo
 		}
 		if x, y, ok := pointerJustPressed(); ok && s.overPainting(x, y) {
-			g.GoTo(NewPaintingScene())
+			g.GoTo(NewPaintingScene(false))
 		}
 		if inpututil.IsKeyJustPressed(ebiten.KeyE) || inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
-			g.GoTo(NewPaintingScene())
+			g.GoTo(NewPaintingScene(false))
 		}
 	}
 	return nil

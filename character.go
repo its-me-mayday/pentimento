@@ -85,20 +85,25 @@ var (
 )
 
 // DrawTrail disegna le impronte (sotto al personaggio).
-func (e *Elena) DrawTrail(dst *ebiten.Image) {
+func (e *Elena) DrawTrail(dst *ebiten.Image, ox, oy float64) {
 	for _, t := range e.trail {
 		a := float64(t.life) / 150 * 0.8
 		c := t.c
 		c.A = uint8(255 * a)
 		dx, dy := math.Cos(t.ang)*3, math.Sin(t.ang)*3
-		vector.StrokeLine(dst, float32(t.x-dx), float32(t.y-dy), float32(t.x+dx), float32(t.y+dy), 2.5, c, true)
+		x, y := t.x+ox, t.y+oy
+		vector.StrokeLine(dst, float32(x-dx), float32(y-dy), float32(x+dx), float32(y+dy), 2.5, c, true)
 	}
 }
 
-// DrawLight disegna l'alone viola della lampada.
-func (e *Elena) DrawLight(dst *ebiten.Image, t float64) {
+// DrawLight disegna l'alone viola della lampada; power 0..1 è la carica.
+func (e *Elena) DrawLight(dst *ebiten.Image, t, ox, oy, power float64) {
 	lx, ly := e.LampPos()
-	flick := 1 + 0.06*math.Sin(t/3.1) + 0.04*math.Sin(t/1.7)
+	lx, ly = lx+ox, ly+oy
+	flick := (0.45 + 0.55*power) * (1 + 0.06*math.Sin(t/3.1) + 0.04*math.Sin(t/1.7))
+	if power < 0.15 {
+		flick *= 0.6 + 0.4*math.Abs(math.Sin(t/2.3)*math.Sin(t/5.1)) // sfarfalla quando è scarica
+	}
 	for k := 6; k >= 1; k-- {
 		r := float32(float64(k) * 9 * flick)
 		vector.DrawFilledCircle(dst, float32(lx+e.Face*float64(k)*3), float32(ly+float64(k)), r, rgba(150, 90, 255, 0.045), true)
@@ -151,6 +156,7 @@ func (e *Elena) Draw(dst *ebiten.Image, t float64, ox, oy float64) {
 
 	// braccio avanti con la lampada UV
 	lx, ly := e.LampPos()
+	lx, ly = lx+ox, ly+oy
 	vector.StrokeLine(dst, px(2.5), py(-22), float32(lx-f*2), float32(ly+bob*0.5), 2.5, coatCol, true)
 	vector.DrawFilledCircle(dst, float32(lx-f*2), float32(ly+bob*0.5), 1.6, skinCol, true)
 	vector.DrawFilledRect(dst, float32(lx-f*1)-2, float32(ly-1.5+bob*0.5), 4, 3, lampBody, true)

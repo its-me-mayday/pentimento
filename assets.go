@@ -51,7 +51,7 @@ func initAssets() {
 	}
 	gradeShader = sh
 
-	paintingBG = generateStarryNight()
+	paintingBG = smallCanvas.Generate()
 	initMusic()
 }
 

@@ -4,10 +4,13 @@
 
 Un thriller sull'arte scritto in Go con [Ebitengine](https://ebitengine.org). Sei Elena, una restauratrice romana: indaghi sulla morte della tua maestra ed entri nei dipinti per scoprire ciò che il falsario ha coperto.
 
-**Vertical slice attuale (Capitolo 1, La notte stellata):**
-1. **Titolo**
-2. **Laboratorio**: cerca con la lampada UV il segno nascosto da Ada.
-3. **Dentro il quadro**: recupera 5 pigmenti, sfuggi alla Macchia e rivela il pentimento.
+**Capitolo 1 — La notte stellata:**
+1. **Laboratorio**: cerca con la lampada UV il segno nascosto da Ada.
+2. **Dentro il quadro** (tre schermate di larghezza, con minimappa): i pigmenti perduti sono invisibili nel grigio e si vedono solo sotto la luce della lampada, che però si scarica. Lanterne e stelle la ricaricano.
+   - **Blu oltremare**: i vortici ti portano invece di respingerti. Attraversi il muro di vortice e cammini sul cielo, trascinata dalle correnti.
+   - **Giallo di cromo**: sblocca il **lampo UV**, che stordisce la Macchia.
+   - **La Macchia** ti insegue: la luce la rallenta e le lanterne sono zone sicure. Tre colpi e la tela si richiude.
+3. **Il pentimento**: con tutti e 5 i pigmenti il quadro rivela la sua firma nascosta.
 
 Tutto è procedurale: la grafica (pennellate generate da codice) e la musica (sintetizzata in tempo reale). Non ci sono asset esterni. La colonna sonora segue il gioco: gli arpeggi si accendono quando restauri i colori e il battito accelera quando la Macchia si avvicina. La storia completa è in [`docs/STORY.md`](docs/STORY.md).
 
@@ -19,7 +22,9 @@ make run         # finestra desktop (su Linux servono le librerie X11/GL, vedi d
 make serve       # build WebAssembly + server su http://localhost:8080
 ```
 
-Controlli: **WASD/frecce** oppure **click/tocco** per muoversi; **Invio/Spazio/click** per avanzare i dialoghi; **M** per la musica.
+Controlli: **WASD/frecce** oppure tieni premuto (mouse/dito) dove vuoi andare · **Spazio / F / tasto destro** (o il pulsante LAMPO su touch) per il lampo UV · **Invio/Spazio/click** per i dialoghi · **M** musica on/off.
+
+Per i test: `go build -tags debug` abilita il tasto **N**, che porta Elena al pigmento successivo.
 
 ## Deploy su GitHub Pages
 
