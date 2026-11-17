@@ -270,7 +270,7 @@ func (s *PaintingScene) Update(g *Game) error {
 		}
 	case phEnd:
 		if !s.dlg.Active() && confirmPressed() {
-			g.GoTo(NewTitleScene())
+			g.GoTo(NewChapter2Card())
 		}
 	case phLost:
 		if confirmPressed() {
@@ -298,6 +298,7 @@ func (s *PaintingScene) palette() []color.NRGBA {
 }
 
 func (s *PaintingScene) updateMood() {
+	SetTheme(0)
 	m := Mood{Pad: 1, Arp: 0.25 + 0.75*s.restore, Bright: s.restore}
 	if s.mac.active && s.phase == phPlay {
 		d := math.Hypot(s.x-s.mac.x, s.y-s.mac.y)
@@ -628,7 +629,7 @@ func (s *PaintingScene) Draw(screen *ebiten.Image) {
 		drawText(screen, "Capitolo 1 — La notte stellata", faceItalic, ScreenW/2, 165, rgba(230, 222, 205, 1), 0)
 		drawText(screen, "continua...", faceText, ScreenW/2, 205, rgba(200, 190, 170, 1), 0)
 		if (s.t/30)%2 == 0 {
-			drawText(screen, "Clicca per tornare al titolo", faceSmall, ScreenW/2, 300, rgba(200, 190, 170, 0.8), 0)
+			drawText(screen, "Clicca per il Capitolo 2", faceSmall, ScreenW/2, 300, rgba(200, 190, 170, 0.8), 0)
 		}
 	case s.phase == phLost:
 		vector.DrawFilledRect(screen, 0, 0, ScreenW, ScreenH, rgba(4, 4, 10, 0.8), false)

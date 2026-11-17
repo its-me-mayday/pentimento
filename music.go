@@ -40,6 +40,15 @@ func initMusic() {
 	musicPlayer.Play()
 }
 
+// SetTheme sceglie la progressione armonica del capitolo.
+func SetTheme(n int) {
+	if music != nil {
+		music.mu.Lock()
+		music.themeT = n
+		music.mu.Unlock()
+	}
+}
+
 // SetMood imposta l'umore da raggiungere (con transizione morbida).
 func SetMood(m Mood) {
 	if music != nil {
@@ -84,6 +93,8 @@ type Synth struct {
 	mu     sync.Mutex
 	target Mood
 	queue  []string
+	themeT int
+	theme  int
 
 	cur    Mood
 	n      int64
@@ -111,7 +122,17 @@ func NewSynth() *Synth {
 	}
 }
 
-var chords = [][4]int{
+// Temi: 0 = Capitolo 1 (re minore, notte stellata), 1 = Capitolo 2 (do minore, barocco).
+var themes = [][][4]int{chordsNotte, chordsCaravaggio}
+
+var chordsCaravaggio = [][4]int{
+	{48, 55, 60, 63}, // Do minore
+	{44, 51, 56, 60}, // La bemolle
+	{41, 48, 53, 56}, // Fa minore
+	{43, 50, 55, 59}, // Sol (dominante)
+}
+
+var chordsNotte = [][4]int{
 	{50, 57, 62, 65}, // Re minore
 	{46, 53, 58, 62}, // Si bemolle
 	{43, 50, 55, 58}, // Sol minore
@@ -153,6 +174,10 @@ const (
 func (s *Synth) Read(p []byte) (int, error) {
 	s.mu.Lock()
 	target := s.target
+	// il tema cambia solo al cambio di accordo, per non stonare
+	if s.themeT != s.theme && math.Mod(float64(s.n), chordLen) < float64(len(p)/8) {
+		s.theme = s.themeT
+	}
 	q := s.queue
 	s.queue = nil
 	s.mu.Unlock()
@@ -180,6 +205,7 @@ func (s *Synth) Read(p []byte) (int, error) {
 func (s *Synth) sample() (float64, float64) {
 	m := s.cur
 	n := float64(s.n)
+	chords := themes[s.theme]
 	ci := int(n/chordLen) % len(chords)
 	ch := chords[ci]
 	tc := math.Mod(n, chordLen) / chordLen
@@ -217,7 +243,11 @@ func (s *Synth) sample() (float64, float64) {
 	note := ch[arpPattern[k%int64(len(arpPattern))]] + 12
 	f := mtof(float64(note))
 	s.arpP += f / sampleRate
-	arp := (math.Sin(2*math.Pi*s.arpP) + 0.35*math.Sin(4*math.Pi*s.arpP)) * s.arpEnv * 0.09 * m.Arp
+	arp := math.Sin(2*math.Pi*s.arpP) + 0.35*math.Sin(4*math.Pi*s.arpP)
+	if s.theme == 1 { // timbro da clavicembalo
+		arp += 0.3*math.Sin(6*math.Pi*s.arpP) + 0.15*math.Sin(10*math.Pi*s.arpP)
+	}
+	arp *= s.arpEnv * 0.09 * m.Arp
 
 	// tensione: battito "lub-dub" e archi in seconda minore con tremolo
 	tension := 0.0
@@ -297,6 +327,7 @@ func (s *Synth) sample() (float64, float64) {
 }
 
 func (s *Synth) trigger(name string) {
+	chords := themes[s.theme]
 	ch := chords[int(float64(s.n)/chordLen)%len(chords)]
 	switch name {
 	case "chime":
@@ -310,6 +341,14 @@ func (s *Synth) trigger(name string) {
 		s.shots = append(s.shots, shot{kind: 2, freq: mtof(69), amp: 0.09})
 		s.shots = append(s.shots, shot{kind: 0, freq: mtof(93), amp: 0.07})
 		s.shots = append(s.shots, shot{kind: 0, freq: mtof(98), amp: 0.05, start: sampleRate / 12})
+	case "called": // "chiamata": accordo dissonante che cresce
+		for _, nt := range []int{60, 61, 66} {
+			s.shots = append(s.shots, shot{kind: 2, freq: mtof(float64(nt)), amp: 0.05})
+		}
+		s.shots = append(s.shots, shot{kind: 1, amp: 0.6, start: sampleRate / 3})
+	case "evidence":
+		s.shots = append(s.shots, shot{kind: 0, freq: mtof(79), amp: 0.08})
+		s.shots = append(s.shots, shot{kind: 0, freq: mtof(84), amp: 0.06, start: sampleRate / 8})
 	case "hit":
 		s.shots = append(s.shots, shot{kind: 1, amp: 0.7})
 	case "reveal":

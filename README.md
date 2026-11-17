@@ -12,6 +12,12 @@ Un thriller sull'arte scritto in Go con [Ebitengine](https://ebitengine.org). Se
    - **La Macchia** ti insegue: la luce la rallenta e le lanterne sono zone sicure. Tre colpi e la tela si richiude.
 3. **Il pentimento**: con tutti e 5 i pigmenti il quadro rivela la sua firma nascosta.
 
+**Capitolo 2 — La chiamata** (*La vocazione di san Matteo*, Caravaggio):
+1. **Laboratorio**: Corrado Valli porta il quadro. Esaminalo con **UV**, **luce radente** e **lente** (tasti 1-3), ma non farti vedere con la UV quando Corrado si volta. Poi scegli cosa dirgli.
+2. **Dentro il quadro** il gioco è stealth: resta nell'ombra. Il fascio della finestra, gli sguardi dei gabellieri e la mano di Cristo ti «chiamano». La lampada (L/Spazio) rivela i pigmenti ma ti rende più visibile.
+
+Dal titolo si può scegliere il capitolo; alla fine del Capitolo 1 si passa al 2.
+
 Tutto è procedurale: la grafica (pennellate generate da codice) e la musica (sintetizzata in tempo reale). Non ci sono asset esterni. La colonna sonora segue il gioco: gli arpeggi si accendono quando restauri i colori e il battito accelera quando la Macchia si avvicina. La storia completa è in [`docs/STORY.md`](docs/STORY.md).
 
 ## Comandi
@@ -24,7 +30,7 @@ make serve       # build WebAssembly + server su http://localhost:8080
 
 Controlli: **WASD/frecce** oppure tieni premuto (mouse/dito) dove vuoi andare · **Spazio / F / tasto destro** (o il pulsante LAMPO su touch) per il lampo UV · **Invio/Spazio/click** per i dialoghi · **M** musica on/off.
 
-Per i test: `go build -tags debug` abilita il tasto **N**, che porta Elena al pigmento successivo.
+Per i test: `go build -tags debug` abilita il tasto **N** (pigmento o prova successiva) e, nel Capitolo 2, **R** (salta al pentimento).
 
 ## Deploy su GitHub Pages
 

@@ -57,6 +57,7 @@ func NewLabScene() *LabScene {
 func (s *LabScene) Update(g *Game) error {
 	s.t++
 	s.px, s.py, s.pointing = pointer()
+	SetTheme(0)
 	switch s.state {
 	case labIntro, labSearch:
 		SetMood(Mood{Pad: 0.8, Arp: 0.1, Tension: 0.2})
@@ -110,44 +111,8 @@ func (s *LabScene) overPainting(x, y int) bool {
 
 func (s *LabScene) Draw(screen *ebiten.Image) {
 	ft := float64(s.t)
-	// stanza
-	for y := 0; y < ScreenH; y += 3 {
-		t := float64(y) / ScreenH
-		vector.DrawFilledRect(screen, 0, float32(y), ScreenW, 3, lerpColor(rgba(34, 26, 22, 1), rgba(14, 10, 9, 1), t), false)
-	}
-	// finestra con luce lunare
-	vector.DrawFilledRect(screen, 535, 40, 70, 110, rgba(30, 46, 80, 1), false)
-	vector.StrokeRect(screen, 535, 40, 70, 110, 3, rgba(20, 15, 12, 1), false)
-	vector.StrokeLine(screen, 570, 40, 570, 150, 3, rgba(20, 15, 12, 1), false)
-	var shaft vector.Path
-	shaft.MoveTo(535, 150)
-	shaft.LineTo(605, 150)
-	shaft.LineTo(520, 360)
-	shaft.LineTo(400, 360)
-	shaft.Close()
-	fillPath(screen, &shaft, rgba(90, 120, 180, 0.07))
-
-	// tavolo da lavoro e attrezzi
-	vector.DrawFilledRect(screen, 0, 290, ScreenW, 70, rgba(46, 32, 24, 1), false)
-	vector.DrawFilledRect(screen, 0, 288, ScreenW, 4, rgba(70, 50, 36, 1), false)
-	for i, c := range []struct{ r, g, b uint8 }{{120, 160, 150}, {150, 110, 70}, {90, 100, 140}} {
-		x := float32(40 + i*26)
-		vector.DrawFilledRect(screen, x, 262, 14, 28, rgba(c.r, c.g, c.b, 0.75), true)
-		vector.DrawFilledRect(screen, x+4, 255, 6, 8, rgba(30, 25, 20, 1), true)
-	}
-
-	// cavalletto
-	vector.StrokeLine(screen, 210, 360, 250, 40, 5, rgba(70, 48, 30, 1), true)
-	vector.StrokeLine(screen, 430, 360, 390, 40, 5, rgba(70, 48, 30, 1), true)
-
-	// cornice e quadro
-	vector.DrawFilledRect(screen, frameX-10, frameY-10, frameW+20, frameH+20, rgba(110, 80, 40, 1), true)
-	vector.StrokeRect(screen, frameX-6, frameY-6, frameW+12, frameH+12, 2, rgba(170, 130, 70, 1), true)
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Scale(frameW/ScreenW, frameH/ScreenH)
-	op.GeoM.Translate(frameX, frameY)
-	op.Filter = ebiten.FilterLinear
-	screen.DrawImage(s.thumb, op)
+	drawLabRoom(screen)
+	drawFramedThumb(screen, s.thumb)
 	// craquelure
 	for _, c := range [][4]float32{{200, 60, 230, 95}, {230, 95, 222, 130}, {380, 150, 420, 160}, {420, 160, 440, 190}, {300, 70, 310, 100}} {
 		vector.StrokeLine(screen, c[0], c[1], c[2], c[3], 1, rgba(20, 15, 10, 0.6), true)
@@ -187,4 +152,51 @@ func (s *LabScene) Draw(screen *ebiten.Image) {
 	}
 
 	s.dlg.Draw(screen)
+}
+
+// drawLabRoom disegna il laboratorio Bellandi (stanza, finestra, banco, cavalletto).
+func drawLabRoom(screen *ebiten.Image) {
+	// stanza
+	for y := 0; y < ScreenH; y += 3 {
+		t := float64(y) / ScreenH
+		vector.DrawFilledRect(screen, 0, float32(y), ScreenW, 3, lerpColor(rgba(34, 26, 22, 1), rgba(14, 10, 9, 1), t), false)
+	}
+	// finestra con luce lunare
+	vector.DrawFilledRect(screen, 535, 40, 70, 110, rgba(30, 46, 80, 1), false)
+	vector.StrokeRect(screen, 535, 40, 70, 110, 3, rgba(20, 15, 12, 1), false)
+	vector.StrokeLine(screen, 570, 40, 570, 150, 3, rgba(20, 15, 12, 1), false)
+	var shaft vector.Path
+	shaft.MoveTo(535, 150)
+	shaft.LineTo(605, 150)
+	shaft.LineTo(520, 360)
+	shaft.LineTo(400, 360)
+	shaft.Close()
+	fillPath(screen, &shaft, rgba(90, 120, 180, 0.07))
+
+	// tavolo da lavoro e attrezzi
+	vector.DrawFilledRect(screen, 0, 290, ScreenW, 70, rgba(46, 32, 24, 1), false)
+	vector.DrawFilledRect(screen, 0, 288, ScreenW, 4, rgba(70, 50, 36, 1), false)
+	for i, c := range []struct{ r, g, b uint8 }{{120, 160, 150}, {150, 110, 70}, {90, 100, 140}} {
+		x := float32(40 + i*26)
+		vector.DrawFilledRect(screen, x, 262, 14, 28, rgba(c.r, c.g, c.b, 0.75), true)
+		vector.DrawFilledRect(screen, x+4, 255, 6, 8, rgba(30, 25, 20, 1), true)
+	}
+
+	// cavalletto
+	vector.StrokeLine(screen, 210, 360, 250, 40, 5, rgba(70, 48, 30, 1), true)
+	vector.StrokeLine(screen, 430, 360, 390, 40, 5, rgba(70, 48, 30, 1), true)
+
+}
+
+// drawFramedThumb disegna un dipinto incorniciato sul cavalletto.
+func drawFramedThumb(screen, thumb *ebiten.Image) {
+	// cornice e quadro
+	vector.DrawFilledRect(screen, frameX-10, frameY-10, frameW+20, frameH+20, rgba(110, 80, 40, 1), true)
+	vector.StrokeRect(screen, frameX-6, frameY-6, frameW+12, frameH+12, 2, rgba(170, 130, 70, 1), true)
+	op := &ebiten.DrawImageOptions{}
+	b := thumb.Bounds()
+	op.GeoM.Scale(frameW/float64(b.Dx()), frameH/float64(b.Dy()))
+	op.GeoM.Translate(frameX, frameY)
+	op.Filter = ebiten.FilterLinear
+	screen.DrawImage(thumb, op)
 }

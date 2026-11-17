@@ -31,7 +31,11 @@ Indizio dopo indizio, Elena ricostruisce l'esistenza del **Collegio**: una rete 
 ## Capitoli (opere di pubblico dominio)
 
 1. **La notte stellata**, Van Gogh, 1889. *Prologo, la vertical slice attuale.* La lampada, la sigla di Ada, il bianco di titanio, «copia n. 3».
-2. **La vocazione di san Matteo**, Caravaggio, 1600. È a Roma, in San Luigi dei Francesi. Un mondo di luce e ombra dove si gioca nascondendosi nel buio: chi viene "chiamato" dalla luce è scoperto. Si scopre chi ha pagato Ada.
+2. **La vocazione di san Matteo**, Caravaggio, 1600. *Capitolo 2 — La chiamata (giocabile).*
+   - **Laboratorio, sette giorni dopo.** Corrado Valli porta la «copia d'epoca» che Ada aveva cominciato a settembre, per un collezionista svizzero. Elena la esamina con UV, luce radente e lente mentre Corrado telefona. Se la vede usare la lampada UV quando si volta, si riprende il quadro. Le prove: ritocchi che formano un **4** (il Collegio numera le copie: la Notte stellata era la n. 3), una **crettatura da forno** e una **«C.»** su una moneta.
+   - **La scelta**: mentire a Corrado, dirgli la verità o chiedere del collezionista. La scelta cambia le battute di Corrado e il finale del capitolo.
+   - **Dentro il quadro la luce non rivela: chiama.** Il fascio della finestra, gli sguardi dei gabellieri e il gesto di Cristo scoprono Elena. La lampada rivela i pigmenti ma la rende più visibile. Pigmenti: terra d'ombra, vermiglione, ocra gialla e **bianco di zinco** (dal 1834: falso).
+   - **Il pentimento**: sotto il ragazzo che conta le monete c'è il volto di **Corrado Valli**, con l'anello «C.V.». Ada: è lui che porta i quadri, paga e certifica, *ma non dipinge*. La prossima copia parte per **Ginevra**.
 3. **La nascita di Venere**, Botticelli, ~1485. Un falso in viaggio verso un'asta a Ginevra. Livello marino, tra vento e onde.
 4. **Ragazza con l'orecchino di perla**, Vermeer, ~1665. Un mondo-interno silenzioso: la luce della finestra rivela le prove. Elena scopre il passato di Ada nel Collegio.
 5. **Il giardino delle delizie**, Bosch, ~1500. Finale da incubo: il covo del Collegio è *dentro* il trittico. Confronto con Corrado.
